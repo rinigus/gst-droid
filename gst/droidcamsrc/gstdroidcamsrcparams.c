@@ -462,6 +462,9 @@ gst_droidcamsrc_params_choose_image_framerate (GstDroidCamSrcParams * params,
 {
   int x;
   int target_min = -1, target_max = -1;
+  int fps;
+
+  fps = gst_droidcamsrc_params_get_int_locked (params, "preview-frame-rate");
 
   g_mutex_lock (&params->lock);
 
@@ -495,9 +498,20 @@ gst_droidcamsrc_params_choose_image_framerate (GstDroidCamSrcParams * params,
   if (target_min != -1 && target_max != -1) {
     gchar *var;
 
-    /* use the max */
-    gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
-        target_max / 1000, 1, NULL);
+    /* use the requested fps or clip to min/max */
+    if (fps > (target_max / 1000) || fps == -1) {
+      gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
+          target_max / 1000, 1, NULL);
+      GST_DEBUG ("using frame rate by target_max %d", target_max / 1000 );
+    } else if (fps < (target_min / 1000)) {
+      gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
+          target_min / 1000, 1, NULL);
+      GST_DEBUG ("using frame rate by target_min %d", target_min / 1000 );
+    } else {
+      gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
+          fps, 1, NULL);
+      GST_DEBUG ("using frame rate by requested fps %d", fps );
+    }
 
     var = g_strdup_printf ("%d,%d", target_min, target_max);
     gst_droidcamsrc_params_set_string_locked (params, "preview-fps-range", var);
@@ -513,6 +527,9 @@ gst_droidcamsrc_params_choose_video_framerate (GstDroidCamSrcParams * params,
 {
   int x;
   int target_min = -1, target_max = -1;
+  int fps;
+
+  fps = gst_droidcamsrc_params_get_int_locked (params, "preview-frame-rate");
 
   g_mutex_lock (&params->lock);
 
@@ -546,9 +563,20 @@ gst_droidcamsrc_params_choose_video_framerate (GstDroidCamSrcParams * params,
   if (target_min != -1 && target_max != -1) {
     gchar *var;
 
-    /* use the max */
-    gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
-        target_max / 1000, 1, NULL);
+    /* use the requested fps or clip to min/max */
+    if (fps > (target_max / 1000) || fps == -1) {
+      gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
+          target_max / 1000, 1, NULL);
+      GST_DEBUG ("using frame rate by target_max %d", target_max / 1000 );
+    } else if (fps < (target_min / 1000)) {
+      gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
+          target_min / 1000, 1, NULL);
+      GST_DEBUG ("using frame rate by target_min %d", target_min / 1000 );
+    } else {
+      gst_caps_set_simple (caps, "framerate", GST_TYPE_FRACTION,
+          fps, 1, NULL);
+      GST_DEBUG ("using frame rate by requested fps %d", fps );
+    }
 
     var = g_strdup_printf ("%d,%d", target_min, target_max);
     gst_droidcamsrc_params_set_string_locked (params, "preview-fps-range", var);
