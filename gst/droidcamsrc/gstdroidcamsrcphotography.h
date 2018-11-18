@@ -71,11 +71,13 @@ typedef enum
   PROP_MAX_EXPOSURE_TIME,
   PROP_NOISE_REDUCTION,
   PROP_EXPOSURE_MODE,
+  PROP_SUPPORTED_EXPOSURE_MODES
 } GstDroidCamSrcProperties;
 
 void gst_droidcamsrc_photography_register (gpointer g_iface,  gpointer iface_data);
 void gst_droidcamsrc_photography_add_overrides (GObjectClass * klass);
-void gst_droidcamsrc_photography_init (GstDroidCamSrc * src, gint dev);
+void gst_droidcamsrc_photography_init (GstDroidCamSrc * src);
+void gst_droidcamsrc_photography_update_params (GstDroidCamSrc * src);
 void gst_droidcamsrc_photography_destroy (GstDroidCamSrc * src);
 gboolean gst_droidcamsrc_photography_get_property (GstDroidCamSrc * src, guint prop_id,
 						   GValue * value, GParamSpec * pspec);
